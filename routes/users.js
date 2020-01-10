@@ -6,7 +6,7 @@ const router = express.Router();
 const auth = require('../auth');
 
 router.post('/signup', (req, res, next) => {
-    let password = req.body.password;
+    let password = req.body.Password;
     bcrypt.hash(password, 10, function (err, hash) {
         if (err) {
             let err =  new Error('Could not hash!');
@@ -18,7 +18,7 @@ router.post('/signup', (req, res, next) => {
             lastName: req.body.lastName,
             username: req.body.username,
             password: hash,
-            image: req.body.image
+            image: req.body.ProfileImage
         }).then((user) => {
             let token = jwt.sign({ _id: user._id }, process.env.SECRET);
             res.json({ status: "Signup success!", token: token });
@@ -42,7 +42,7 @@ router.post('/login', (req, res, next) => {
                             return next(err);
                         }
                         let token = jwt.sign({ _id: user._id }, process.env.SECRET);
-                        res.json({ status: 'Login success!', token: token });
+                        res.json({ status: 'Login success!', token: token ,user:user});
                     }).catch(next);
             }
         }).catch(next);
@@ -55,8 +55,8 @@ router.get('/me', auth.verifyUser, (req, res, next) => {
 router.put('/me', auth.verifyUser, (req, res, next) => {
     User.findByIdAndUpdate(req.user._id, { $set: req.body }, { new: true })
         .then((user) => {
-            res.json({ _id: user._id, firstName: req.user.firstName, lastName: req.user.lastName, username: user.username, image: user.image });
+            res.json({ _id: user._id, firstName: req.user.firstName, lastName: req.user.lastName, username: user.username, Profileimage: user.image });
         }).catch(next);
-});
+}); 
 
 module.exports = router;
